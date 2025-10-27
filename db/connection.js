@@ -1,18 +1,12 @@
-const mysql = require('mysql')
+const { createClient } = require('@supabase/supabase-js');
 
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'password',
-    database: 'my_database'
-})
+const supabaseUrl = process.env.SUPERBASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
 
-connection.connect((err) => {
-    if (err) {
-        console.error('Error connecting to the database:', err.stack)
-        return
-    }
-    console.log('Connected to the database as id ' + connection.threadId)
-})
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error('Las variables de entorno SUPERBASE_URL y SUPABASE_KEY son requeridas');
+}
 
-module.exports = connection
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+module.exports = supabase;
