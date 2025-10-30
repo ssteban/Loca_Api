@@ -16,6 +16,55 @@ CREATE TABLE municipio (
     fecha_actualizacion TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     fecha_creacion TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+"CRECAION TABLE localidad"
+CREATE TABLE localidad (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL
+);
+"CREACION TABLA municipio_localidad"
+CREATE TABLE municipio_localidad (
+    id SERIAL PRIMARY KEY,
+    municipio_id INTEGER REFERENCES municipio(id),
+    localidad_id INTEGER REFERENCES localidad(id)
+);
+"CREAR TRIGGER municipio_localidad"
+CREATE OR REPLACE FUNCTION asignar_localidades()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO municipio_localidad (municipio_id, localidad_id)
+    SELECT NEW.id, l.id FROM localidad l;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+------------------------------------------------
+CREATE TRIGGER trigger_asignar_localidades
+AFTER INSERT ON municipio
+FOR EACH ROW
+EXECUTE FUNCTION asignar_localidades();
+
+"CREAR VISTA vista_municipio_localidad"
+CREATE VIEW vista_municipio_localidad AS
+SELECT m.nombre AS municipio,
+       d.nombre AS departamento,
+       l.nombre AS localidad
+FROM municipio_localidad ml
+JOIN municipio m ON ml.municipio_id = m.id
+JOIN departamento d ON m.departamento_id = d.id
+JOIN localidad l ON ml.localidad_id = l.id;
+
+"CREAR VISTA vista_departamento_municipio_localidad"
+SELECT d.nombre AS departamento,
+       COUNT(DISTINCT m.id) AS total_municipios,
+       COUNT(ml.id) AS total_localidades
+FROM municipio_localidad ml
+JOIN municipio m ON ml.municipio_id = m.id
+JOIN departamento d ON m.departamento_id = d.id
+GROUP BY d.nombre
+ORDER BY total_municipios DESC;
+
+
+
+
 
 "INSERTAR DATOS EN TABLA departamento"
 INSERT INTO departamento (nombre, divipola, cantidad_personas)
@@ -205,3 +254,58 @@ VALUES
 ('Fortul', NULL, 3),
 ('Puerto Rondón', NULL, 3),
 ('Cravo Norte', NULL, 3);
+
+('Baranoa', NULL, 4),
+('Barranquilla', NULL, 4),
+('Campo de la Cruz', NULL, 4),
+('Candelaria', NULL, 4),
+('Galapa', NULL, 4),
+('Juan de Acosta', NULL, 4),
+('Luruaco', NULL, 4),
+('Malambo', NULL, 4),
+('Manatí', NULL, 4),
+('Palmar de Varela', NULL, 4),
+('Piojó', NULL, 4),
+('Polonuevo', NULL, 4),
+('Ponedera', NULL, 4),
+('Puerto Colombia', NULL, 4),
+('Repelón', NULL, 4),
+('Sabanagrande', NULL, 4),
+('Sabanalarga', NULL, 4),
+('Santa Lucía', NULL, 4),
+('Santo Tomás', NULL, 4),
+('Soledad', NULL, 4),
+('Suan', NULL, 4),
+('Tubará', NULL, 4),
+('Usiacurí', NULL, 4);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"INSERTAR DATOS EN TABLA localidad"
+INSERT INTO localidad (nombre)
+VALUES
+('Norte'),
+('Sur'),
+('Oriente'),
+('Occidente'),
+('Centro'),
+('Suroccidente'),
+('Suroriente'),
+('Metropolitana'),
+('Rural'),
+('Cabecera');
+
