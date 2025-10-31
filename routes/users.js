@@ -46,7 +46,7 @@ router.get('/getMunicipioByDepartamento/:departamentoId', async (req, res, next)
   }
 });
 
-router.get('/getLocalidadesByMunicipio/:municipioId', async (req, res, next) => {
+router.get('/getLocalidadesByMunicipio/:municipioId', async (req, res) => {
   const { municipioId } = req.params;
   try {
     const { data, error } = await db.getLocalidadesByMunicipio(municipioId);

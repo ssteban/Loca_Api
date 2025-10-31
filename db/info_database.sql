@@ -27,6 +27,20 @@ CREATE TABLE municipio_localidad (
     municipio_id INTEGER REFERENCES municipio(id),
     localidad_id INTEGER REFERENCES localidad(id)
 );
+"CREACION TABLA region"
+CREATE TABLE region (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL UNIQUE
+);
+"CREACION TABLA region_departamento"
+CREATE TABLE region_departamento (
+    id SERIAL PRIMARY KEY,
+    region_id INTEGER REFERENCES region(id),
+    departamento_id INTEGER REFERENCES departamento(id)
+);
+
+
+
 "CREAR TRIGGER municipio_localidad"
 CREATE OR REPLACE FUNCTION asignar_localidades()
 RETURNS TRIGGER AS $$
@@ -61,6 +75,21 @@ JOIN municipio m ON ml.municipio_id = m.id
 JOIN departamento d ON m.departamento_id = d.id
 GROUP BY d.nombre
 ORDER BY total_municipios DESC;
+
+"CREAR VISTA vista_region_departamento_municipio"
+CREATE VIEW vista_region_departamento_municipio AS
+SELECT
+  r.id AS region_id,
+  r.nombre AS region,
+  d.id AS departamento_id,
+  d.nombre AS departamento,
+  m.id AS municipio_id,
+  m.nombre AS municipio
+FROM region r
+JOIN region_departamento rd ON r.id = rd.region_id
+JOIN departamento d ON rd.departamento_id = d.id
+JOIN municipio m ON m.departamento_id = d.id
+ORDER BY r.nombre, d.nombre, m.nombre;
 
 
 
@@ -309,3 +338,63 @@ VALUES
 ('Rural'),
 ('Cabecera');
 
+"INSERTAR DATOS EN TABLA region"
+INSERT INTO region (nombre) VALUES
+('Caribe'),
+('Andina'),
+('Pacífica'),
+('Orinoquía'),
+('Amazonía'),
+('Insular');
+
+
+"INSERTAR DATOS EN TABLA region_departamento"
+-- Región Caribe (id = 1)
+INSERT INTO region_departamento (region_id, departamento_id) VALUES
+(1, 4),   -- Atlántico
+(1, 5),   -- Bolívar
+(1, 11),  -- Cesar
+(1, 13),  -- Córdoba
+(1, 18),  -- La Guajira
+(1, 19),  -- Magdalena
+(1, 28);  -- Sucre
+
+-- Región Andina (id = 2)
+INSERT INTO region_departamento (region_id, departamento_id) VALUES
+(2, 2),   -- Antioquia
+(2, 6),   -- Boyacá
+(2, 7),   -- Caldas
+(2, 14),  -- Cundinamarca
+(2, 17),  -- Huila
+(2, 22),  -- Norte de Santander
+(2, 24),  -- Quindío
+(2, 25),  -- Risaralda
+(2, 27),  -- Santander
+(2, 29);  -- Tolima
+
+-- Región Pacífica (id = 3)
+INSERT INTO region_departamento (region_id, departamento_id) VALUES
+(3, 10),  -- Cauca
+(3, 12),  -- Chocó
+(3, 21),  -- Nariño
+(3, 30);  -- Valle del Cauca
+
+-- Región Orinoquía (id = 4)
+INSERT INTO region_departamento (region_id, departamento_id) VALUES
+(4, 3),   -- Arauca
+(4, 9),   -- Casanare
+(4, 20),  -- Meta
+(4, 32);  -- Vichada
+
+-- Región Amazónica (id = 5)
+INSERT INTO region_departamento (region_id, departamento_id) VALUES
+(5, 1),   -- Amazonas
+(5, 8),   -- Caquetá
+(5, 15),  -- Guainía
+(5, 16),  -- Guaviare
+(5, 23),  -- Putumayo
+(5, 31);  -- Vaupés
+
+-- Región Insular (id = 6)
+INSERT INTO region_departamento (region_id, departamento_id) VALUES
+(6, 26);  -- San Andrés y Providencia
