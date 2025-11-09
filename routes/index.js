@@ -18,7 +18,7 @@ router.get('/info-api', (req, res) => {
       localidades: '/ciudades/:id/localidades',
       barrios: '/localidades/:id/barrios'
     },
-    estado: 'En desarrollo ',
+    estado: 'Desplegada y operativa',
     mensaje: '¡Bienvenido a LocaApi :)'
   });
 });
