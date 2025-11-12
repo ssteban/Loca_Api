@@ -14,7 +14,7 @@ var app = express();
 
 
 app.use(cors());
-app.use(logger('dev'));
+app.use(logger(':remote-addr :method :url :status :response-time ms - :res[content-length]'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
